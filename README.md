@@ -7,4 +7,4 @@ The default title for the program is Battletoads Timer although it can be change
 BUILDING INSTRUCTIONS FOR PYINSTALLER:
 
 1. Remove line 195 in the program (root.iconbitmap("toad.ico"))
-2. Run pyinstaller SpeedRunTimer.py --onefile --windowed --icon=(ICON PATH HERE)
+2. Run pyinstaller SpeedRunTimer.py --onefile --windowed --icon=PATHHERE
