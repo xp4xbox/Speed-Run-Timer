@@ -4,11 +4,22 @@ import tkinter.messagebox
 import time
 import os.path
 from heapq import nsmallest
+import pyHook
+
+def OnKeyboardEvent(event):
+    if event.Key == "Space":
+        btnStopState = str(btnStop["state"])
+        if not btnStopState == "disabled":
+            OnClickButtonStop()
+    return True
+
+hm = pyHook.HookManager()
+hm.KeyDown = OnKeyboardEvent
+hm.HookKeyboard()
 
 strStop = "no"
 
 strOutput = "00:00.00.00"
-
 
 def ResetStop():
     global strStop; strStop = "no"
@@ -217,4 +228,5 @@ delay.set(False)
 SubMenu2.add_checkbutton(label="5 Second Delay Start", variable=delay)
 SubMenu2.add_command(label="Change Title", command=ChangeTitle)
 SubMenu2.add_command(label="Change Icon", command=ChangeIcon)
+
 root.mainloop()
