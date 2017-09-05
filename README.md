@@ -1,8 +1,10 @@
 # Simple-Speed-Run-Timer
 
-This is a simple timer/stopwatch made in python for timing speed runs in games and record them for later viewing. Requires no aditional modules other than the default ones in python3. 
+This is a simple timer/stopwatch made in python for timing speed runs in games and record them for later viewing.
 
 The default title for the program is Battletoads Timer although it can be changed either permanently in the code or in the program itself. Same goes with the icon.
+
+Requires Python 3, PyHook and Pywin32
 
 BUILDING INSTRUCTIONS FOR PYINSTALLER:
 
