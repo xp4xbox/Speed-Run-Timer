@@ -4,7 +4,7 @@ This is a timer/stopwatch made in python for timing speed runs in games and reco
 
 The default title for the program is Battletoads Timer although it can be changed either permanently in the code or in the program itself. Same goes with the icon.
 
-![alt text](https://imgur.com/a/O46E7)
+![alt text](https://imgur.com/wRpzn71)
 
 Requires Python 3, PyHook and Pywin32
 
