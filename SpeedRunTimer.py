@@ -1,10 +1,8 @@
 from tkinter import *
 import tkinter as tk
 import tkinter.messagebox
-import time
-import os.path
+import time,  os.path, pyHook
 from heapq import nsmallest
-import pyHook
 
 def OnKeyboardEvent(event):
     if event.Key == "Space":
@@ -165,13 +163,15 @@ def SaveToLog():
 def ChangeIcon():
     window3 = tk.Toplevel()
     window3.resizable(0, 0)
+    window3.geometry("300x60")
+    window3.wm_title("Change Icon")
 
-    EntryIcon = Entry(window3)
-    EntryIcon.insert(END, "Path to icon")
-    EntryIcon.pack()
+    EntryIcon = Entry(window3, width=48)
+    EntryIcon.insert(END, "Path to icon eg. c:\icon.ico")
+    EntryIcon.pack(pady=5, expand=TRUE)
     EntryIcon.focus_set()
 
-    def callback2():
+    def ChangeIconOk():
         strEntry = EntryIcon.get()
         try:
             root.iconbitmap(strEntry)
@@ -179,31 +179,110 @@ def ChangeIcon():
             tkinter.messagebox.showerror("Error", "Invalid Path/Icon")
         window3.destroy()
 
-    ButtonIcon = Button(window3, text="OK", width=10, command=callback2)
-    ButtonIcon.pack()
+    ButtonIcon = Button(window3, text="OK", width=40, bd=2, command=ChangeIconOk)
+    ButtonIcon.pack(pady=2, padx=5, expand=TRUE)
 
 def ChangeTitle():
     window2 = tk.Toplevel()
     window2.resizable(0, 0)
+    window2.geometry("300x60")
+    window2.wm_title("Change Title")
 
-    EntryTitle = Entry(window2)
-    EntryTitle.pack()
+    EntryTitle = Entry(window2, width=48)
+    EntryTitle.pack(pady=5, expand=TRUE)
     EntryTitle.focus_set()
 
-    def callback():
+    def ChangeTitleOk():
         strTitle = EntryTitle.get()
         root.wm_title(strTitle)
         window2.destroy()
 
-    ButtonTitle = Button(window2, text="OK", width=10, command=callback)
+    ButtonTitle = Button(window2, text="OK", width=40, bd=2, command=ChangeTitleOk)
     ButtonTitle.pack()
+
+def TimeTable():
+    window = tk.Toplevel()
+    window.geometry("200x50")
+    window.resizable(0, 0)
+    window.title("Time Table")
+
+    if os.path.isfile("times2.txt") == True:
+        TimesLabel = []
+        objFile = open("times2.txt", "r")
+        intNumTimes = int(objFile.readline())
+
+        intYWindowSize = 50 + (intNumTimes * 40)
+        window.geometry("200x"+str(intYWindowSize))
+
+        TopLabel = Label(window, text="Split\t\t\tTime"); TopLabel.pack()
+
+        # requires using a monospaced font for corrected output
+        for intCounter in range(0, intNumTimes):
+            strCurrentLine = objFile.readline()
+            intSpacing = 20 - len(strCurrentLine)
+            strTimeLine = str(intCounter + 1)
+            for intCounter2 in range(0, intSpacing):
+                strTimeLine = strTimeLine + " "
+            strCurrentLine = strTimeLine + strCurrentLine
+            TimesLabel.append(Label(window, text=strCurrentLine, font="TkFixedFont"))
+            TimesLabel[intCounter].pack(expand=True)
+        objFile.close()
+
+    def OnClickButtonSet():
+
+        def Cancel():
+            WindowSetNumTimes.destroy()
+
+        def OKNumTimes():
+            def SaveTimes():
+                global Times
+                Times = []
+                objFile = open("times2.txt", "w")
+                objFile.write(str(intNumTimes)+"\n")
+
+                for intCounter in range(0, intNumTimes):
+                    Times.append(EntryTime[intCounter].get())
+                    objFile.write(Times[intCounter]+"\n")
+                objFile.close()
+                WindowSetTimes.destroy()
+                window.destroy()
+                TimeTable()
+
+            intNumTimes = int(spbNumTimes.get())
+            WindowSetNumTimes.destroy()
+            WindowSetTimes = tk.Toplevel()
+            WindowSetTimes.wm_title("Set Times")
+            intWindowSize = intNumTimes * 30
+            WindowSetTimes.geometry("200x"+str(intWindowSize + 30))
+            EntryTime = []
+            for intCounter in range(0, intNumTimes):
+                EntryTime.append(Entry(WindowSetTimes, width=20))
+                EntryTime[intCounter].insert(END, "Time "+str(intCounter + 1))
+                EntryTime[intCounter].pack(fill=X, expand=TRUE)
+            btnOK = Button(WindowSetTimes, text="OK",command=SaveTimes, bd=2); btnOK.pack(anchor=SW, fill=X)
+
+        WindowSetNumTimes = tk.Toplevel()
+        WindowSetNumTimes.geometry("170x60")
+        WindowSetNumTimes.resizable(0, 0)
+        WindowSetNumTimes.title("Set Times")
+        lbSetNum = Label(WindowSetNumTimes, text="Number Of Times:"); lbSetNum.pack(side=LEFT, anchor=NW, padx=4)
+        spbNumTimes = Spinbox(WindowSetNumTimes, from_=1, to=20, width=5); spbNumTimes.pack(anchor=NE, padx=7)
+        btnCancel = Button(WindowSetNumTimes, text="Cancel", width=7, command=Cancel, bd=2); btnCancel.place(relx=0.02, rely=0.5)
+        btnOK = Button(WindowSetNumTimes, text="OK", width=7, command=OKNumTimes, bd=2); btnOK.place(relx=0.64, rely=0.5)
+
+    def TimeTableOK():
+        window.destroy()
+
+    btnSetTimes = Button(window, text="Set Times", width=10, bd=3, command=OnClickButtonSet)
+    btnSetTimes.pack(side=BOTTOM, pady=6, expand=True)
+
 
 root = Tk()
 
 root.resizable(0, 0)
-root.wm_title("Battletoads Timer")
+root.wm_title("Speed Run Timer")
 root.geometry("250x100")
-root.iconbitmap("toad.ico")
+root.iconbitmap("")
 
 
 lbtime = Label(root, pady=10, text=strOutput)
@@ -223,6 +302,7 @@ Menu1.add_cascade(label="Times", menu=SubMenu)
 Menu1.add_cascade(label="Options", menu=SubMenu2)
 SubMenu.add_command(label="Save Time", command=SaveToLog)
 SubMenu.add_command(label="Best Times", command=BestTime)
+SubMenu.add_command(label="Time Table", command=TimeTable)
 delay = tk.BooleanVar()
 delay.set(False)
 SubMenu2.add_checkbutton(label="5 Second Delay Start", variable=delay)
